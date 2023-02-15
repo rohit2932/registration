@@ -54,7 +54,7 @@ function validateForm() {
                 let Email1 = document.getElementById("email").value;
                 PW1 = document.getElementById("password").value;
                 DateOfBirth1 = document.getElementById("dob").value;
-                Accepted = acceptInput;
+                Accepted = document.getElementById("ACC").value;
 
                 let template = `
                             <tr>
