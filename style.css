@@ -76,25 +76,25 @@ body {
     border: 1px solid rgba(209, 213, 219, 0.3);
     font-family: 'Nunito', sans-serif;
 }
-#NM{
+#name{
     border-radius: 30px;
     height: 30px;
     margin-left: 61px;
     padding: 0 20px;
 }
-#EM{
+#email{
     border-radius: 30px;
     height: 30px;
     margin-left: 61px;
     padding: 0 20px;
 }
-#PW{
+#password{
     border-radius: 30px;
     height: 30px;
     margin-left: 39px;
     padding: 0 20px;
 }
-#DB{
+#dob{
     border-radius: 30px;
     height: 30px;
     width: 55%;
