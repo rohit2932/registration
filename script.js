@@ -1,171 +1,126 @@
-let btnAdd = document.querySelector('button');
-let table = document.querySelector('table');
+let element = (id) => document.getElementById(id);
 
-let nameInput = localStorage.getItem('Is_Name');
-let emailInput = localStorage.getItem('Is_Email');
-let passwordInput = localStorage.getItem('Is_PW');
-let dobInput = localStorage.getItem('Is_DateofBirth');
-let acceptInput = localStorage.getItem('Is_Accepted');
+let classes = (classes) => document.getElementsByClassName(classes);
 
-// btnAdd.addEventListener('click',() =>{
-//     let Name1 = document.getElementById("NM").value;
-//     let Email1 = document.getElementById("EM").value;
-//     let PW1 = document.getElementById("PW").value;
-//     let DateOfBirth1 = document.getElementById("DB").value;
-//     let Accepted = acceptInput;
+let user_entries = [];
 
-//     let template = `
-//                    <tr>
-//                         <td>${Name1}</td>
-//                         <td>${Email1}</td>
-//                         <td>${PW1}</td>
-//                         <td>${DateOfBirth1}</td>
-//                         <td>${Accepted}</td>
-//                    </tr>`;
-//     table.innerHTML += template; 
- 
-// })
-function seterror(id,error) {
-    element = document.getElementById(id);
-    element.getElementsByClassName('formerror')[0].innerHTML = error;
+function fillTable(){
+    let obj = localStorage.getItem("user_entries");
+    if(obj){
+        user_entries = JSON.parse(obj);
+    }else{
+        user_entries = [];
+    }
+    return user_entries;
+}
+user_entries = fillTable();
 
+let username = element("name"),
+  email = element("email"),
+  password = element("password"),
+  tc = element("tc"),
+  dob = element("dob");
+
+let errormsg = classes("errormsg");
+
+let form = element("form");
+
+function verify(elem,message,cnd){
+    if(cnd){
+        elem.style.border = "2px solid red";
+        elem.setCustomValidity(message);
+        elem.reportValidity();
+    }else{
+        elem.style.border = "2px solid green";
+        elem.setCustomValidity('');
+
+    }
+}
+
+function checkDOB(){
+    let age = new Date().getFullYear() - new Date(dob.value).getFullYear();
+    if(age < 18 || age>55){
+        return false;
+    }else{
+        return true;
+    }
+}
+let message_name = "Username must be at least 2 characters long";
+let message_email = "Email must be valid";
+let message_agree = "You must agree to the terms and conditions";
+let message_dob = "You age must be between 18 and 55 to continue";
+
+username.addEventListener("input", (e) => {
+    let cond_name = username.value.length < 2;
+    e.preventDefault();
+    verify(username,message_name,cond_name);
+});
+
+email.addEventListener("input", (e) => {
+    let cond_email = !(email.value.includes("@") && email.value.includes("."));
+    e.preventDefault();
+    verify(email,message_email,cond_email);
+});
+
+dob.addEventListener("input", (e) => {
+    let cond_dob = !checkDOB();
+    e.preventDefault();
+    verify(dob,message_dob,cond_dob);
+});
+tc.addEventListener("input", (e) => {
+    let cond_agree = !tc.checked;
+    e.preventDefault();
+    verify(tc,message_agree,cond_agree);
+});
+
+function makeObject(){
+    let check = false;
+    if(tc.checked){
+        check = true;
+    }
+    let obj = {
+        name: username.value,
+        email: email.value,
+        password: password.value,
+        dob: dob.value,
+        checked: check
+    }
+    return obj;
 }
 
 
-function validateForm() {
-    //var returnval = true; //true
-    var password = document.forms["myform"]["passW"].value;
-    const passarray = password.split("");
-    let charac = passarray.length >= 8 && passarray.length <= 32;
-    if (charac == true) {
-        returnval = true; //true
-        
-        
+function displayTable(){
+    let table = element("user-table");
+    let entries = user_entries;
+    let str = `<tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Password</th>
+                    <th>Dob</th>
+                    <th>Accepted terms?</th>
+                </tr>\n`;
+    for(let i=0;i<entries.length;i++){
+        str += `<tr>
+                    <td>${entries[i].name}</td>
+                    <td>${entries[i].email}</td>
+                    <td>${entries[i].password}</td>
+                    <td>${entries[i].dob}</td>
+                    <td>${entries[i].checked}</td>
+                </tr>\n`;
     }
-    else {
-        seterror("pass1","*Password must be between 8 to 32 characters");
-        returnval = false;
-    }
-    
-    //validateDob();
-    if (returnval = true){
-            btnAdd.addEventListener('click',() =>{
-                let Name1 = document.getElementById("name").value;
-                let Email1 = document.getElementById("email").value;
-                PW1 = document.getElementById("password").value;
-                DateOfBirth1 = document.getElementById("dob").value;
-                Accepted = document.getElementById("ACC").value;
-
-                let template = `
-                            <tr>
-                                <td>${Name1}</td>
-                                <td>${Email1}</td>
-                                <td>${PW1}</td>
-                                <td>${DateOfBirth1}</td>
-                                <td>${Accepted}</td>
-                            </tr>`;
-                table.innerHTML += template;
-            })
-    }
-    else {
-        returnval = false;
-
-    }
-    return returnval;
+    table.innerHTML = str;
 }
 
-//////////////////////////////////////////////////////
-function seterror1(id,error) {
-    element = document.getElementById(id);
-    element.getElementsByClassName('formerror1')[0].innerHTML = error;
-
-}
-function validateDob() {
-
-    var returnval = true;
-    //Todays Date Year and Time ///////////////////////////////////////////////////////////////
-    let now = new Date();
-
-    // (const tD = currentdate.split("-");
-    // let tdYear = tD[0];
-    // let tdMonth = tD[1];
-    // let tdDay= tD[2];
-    // const Currenttime = [tdDay,tdMonth,tdYear];)
-
-    //let now = new Date('${tdDay} ${tdMonth} ${tdYear}');
-    //let tD1 = tD.join("");
-    //let convert1 = Number(tD1);
-
-    // Date Of Birth of the user ///////////////////////////////////////////////////////
-    let birthdate = new Date(document.forms["myform"]["DOB"].value);
-//    ( const InpD = date.split("-");
-//     let YOBU = InpD[0];
-//     let MOBU = InpD[1];
-//     let DOBU = InpD[2];
-//     const Dateofbirthofuser = [DOBU,MOBU,YOBU]; )
-
-    //let InpD1 = InpD.join("");
-    //let convert2 = Number(InpD1);
-    let age = now.getFullYear() - birthdate.getFullYear();
-    let monthdiff = now.getMonth() - birthdate.getMonth();
-    // (let age = Currenttime[2] - Dateofbirthofuser[2];)
-    //let days = math.round(age/(1000*60*60*24));
-    if (monthdiff < 0 || (monthdiff === 0 && now.getDate() < birthdate.getDate())) {
-        age--;
+form.addEventListener("submit", (e) => {
+    let cond_agree= !tc.checked;
+    e.preventDefault();
+    if (!cond_agree) {
+        let obj = makeObject();
+        user_entries.push(obj);
+        localStorage.setItem("user_entries", JSON.stringify(user_entries));
     }
-    let validateage = age >= 18 && age <= 55;
-    if (validateage == true) {
-        returnval = true;
-        validateForm();
-        //seterror1("DOB1","*Age must be between 18 to 55");
-    }
-    else if(validateage == false){
-        returnval = false;
-        seterror1("DOB1","*Age must be between 18 to 55");
-    }
-    /////////////////////////////////////////////
-    
-    //return returnval;
-}
-
-function validateEmail() {
-    var inputmail = document.forms["myform"]["email"].value;
-    var mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-    if(inputmail.value.match(mailformat)){
-        returnval = true;
-        validateDob();
-    }
-    else{
-        returnval = false;
-    }
-}
-function myfunc(event) {
-    
-    event.preventDefault();
-    validateEmail();
-
-    var Name = document.getElementById("name").value;
-    var Email = document.getElementById("email").value;
-    var PW = document.getElementById("password").value;
-    var DateOfBirth = document.getElementById("dob").value;
-    var AcceptedInp = document.getElementById("ACC").value;
-
-    localStorage.setItem('Is_Name',Name);
-    localStorage.setItem('Is_Email',Email);
-    localStorage.setItem('Is_PW',PW);
-    localStorage.setItem('Is_DateofBirth',DateOfBirth);
-    localStorage.setItem('Is_Accepted',AcceptedInp);
-
-    // let Name1 = document.getElementById("1").innerHTML = localStorage.getItem('Is_Name');
-    // let Email1 = document.getElementById("2").innerHTML = localStorage.getItem('Is_Email');
-    // let PW1 = document.getElementById("3").innerHTML = localStorage.getItem('Is_PW');
-    // let DateOfBirth1 = document.getElementById("4").innerHTML = localStorage.getItem('Is_DateofBirth');
-    // let Accepted = document.getElementById("5").innerHTML = "Yes";
-
-    
-    
-    
-    
-
-    
-}
+    displayTable();
+});
+window.onload = (event) => {
+    displayTable();
+};
